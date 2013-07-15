@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 /**
  * MaxTemperatureLegacy class.
+ *
  * @author Yeam Anan (<yeamanan@gmail.com>)
  */
 public class MaxTemperatureLegacy {
@@ -24,6 +25,7 @@ public class MaxTemperatureLegacy {
 
     /**
      * main() method.
+     *
      * @param args arguments
      */
     public static void main(final String[] args) {
@@ -59,6 +61,7 @@ public class MaxTemperatureLegacy {
 
     /**
      * doWork() method.
+     *
      * @param files list of input file
      * @param outputFolder output folder
      */

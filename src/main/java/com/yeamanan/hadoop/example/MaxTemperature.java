@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 /**
  * MaxTemperature class.
+ *
  * @author Yeam Anan (<yeamanan@gmail.com>)
  */
 public class MaxTemperature {
@@ -24,11 +25,12 @@ public class MaxTemperature {
 
     /**
      * main() method.
+     *
      * @param args arguments
      */
     public static void main(final String[] args) {
 
-        for(int i = 0; i < args.length; i++) {
+        for (int i = 0; i < args.length; i++) {
             LOGGER.info(args[i]);
         }
 
@@ -70,8 +72,7 @@ public class MaxTemperature {
 
             System.exit(retValue ? 0 : 1);
         } catch (IOException | ClassNotFoundException | InterruptedException e) {
-                LOGGER.fatal("Fatal error", e);
+            LOGGER.fatal("Fatal error", e);
         }
     }
-
 }
