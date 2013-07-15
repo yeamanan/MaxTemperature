@@ -4,3 +4,16 @@
 *.jar
 *.war
 *.ear
+
+# Build Folder #
+build/
+
+# Lib Folder #
+lib/
+
+# Netbeans Folder #
+nbproject/
+
+# Data Folder #
+input/
+output/

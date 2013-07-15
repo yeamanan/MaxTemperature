@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<project name="MaxTemperature" default="run" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <description>Hadoop Map Reduce application example</description>
+
+  <!-- Folder configuration -->
+  <property name="src.main.dir" value="src/main/java"/>
+  <property name="rsc.main.dir" value="src/main/resources"/>
+  <property name="src.test.dir" value="src/test/java"/>
+  <property name="rsc.test.dir" value="src/test/resources"/>
+  <property name="lib.dir" value="lib"/>
+  <property name="build.dir" value="build"/>
+  <property name="classes.dir" value="${build.dir}/classes"/>
+  <property name="test.dir" value="${build.dir}/test"/>
+  <property name="jar.dir" value="${build.dir}/jar"/>
+  <property name="report.dir" value="${build.dir}/report"/>
+  <!-- -->
+
+  <!-- Main class of the project -->
+  <property name="main-class"  value="com.yeamanan.hadoop.example.MaxTemperature"/>
+  <!-- -->
+   
+  <!-- Path of the classpath -->
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+  </path>
+  <!-- -->
+
+  <!-- Path of the jar file -->
+  <path id="application" location="${jar.dir}/${ant.project.name}.jar"/>
+  <!-- -->
+
+  <!-- Path of the test file -->
+  <path id="test" location="${test.dir}/"/>
+  <!-- -->
+
+  <!-- Delete the build directory -->
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <echo message="${java.home}"/>
+  </target>
+  <!-- -->
+
+  <!-- Create the build folder tree -->
+  <target name="init" depends="clean">
+    <mkdir dir="${lib.dir}"/>
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${classes.dir}"/>
+    <mkdir dir="${test.dir}"/>
+    <mkdir dir="${jar.dir}"/>
+    <mkdir dir="${report.dir}"/>
+  </target>
+  <!-- -->
+
+  <!-- Copy the main resources in the classes' build folder -->
+  <target name="resources" depends="init">
+    <copy todir="${classes.dir}">
+      <fileset dir="${rsc.main.dir}"/>
+    </copy>
+  </target>
+  <!-- -->
+
+  <!-- Compile the main sources -->
+  <target name="build" depends="resources">
+    <javac srcdir="${src.main.dir}" destdir="${classes.dir}" classpathref="classpath" includeantruntime="false"/>
+  </target>
+  <!-- -->
+
+  <!-- Archive the application -->
+  <target name="jar" depends="build">
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+      <manifest>
+        <attribute name="Main-Class" value="${main-class}"/>
+      </manifest>
+    </jar>
+  </target>
+  <!-- -->
+
+  <!-- Run the application -->
+  <target name="run" depends="jar">
+    <java fork="true" classname="${main-class}" args="-input ../../input/ -output ../../output/">
+      <classpath>
+        <path refid="classpath"/>
+        <path refid="application"/>
+      </classpath>
+    </java>
+  </target>
+  <!-- -->
+
+<!-- JUnit -->
+  <!-- Copy the test's resources in the test's build folder -->
+  <target name="resources-test">
+    <copy todir="${test.dir}">
+      <fileset dir="${rsc.test.dir}"/>
+    </copy>
+  </target>
+  <!-- -->
+
+  <!-- Compile the test's sources -->
+  <target name="build-test" depends="resources-test">
+    <javac srcdir="${src.test.dir}" destdir="${test.dir}" includeantruntime="false">
+      <classpath>
+        <path refid="classpath"/>
+        <path refid="application"/>
+      </classpath>
+    </javac>
+  </target>
+  <!-- -->
+
+  <!-- Run JUnit test -->
+  <target name="test" depends="build-test">
+    <junit printsummary="yes">
+      <classpath>
+        <path refid="classpath"/>
+        <path refid="application"/>
+        <path refid="test"/>
+      </classpath>
+      <formatter type="xml"/>
+      <batchtest fork="yes" todir="${report.dir}">
+        <fileset dir="${src.test.dir}"/>
+      </batchtest>
+    </junit>
+  </target>
+  <!-- -->
+
+  <!-- Build JUnit report -->
+  <target name="report" depends="test">
+    <junitreport todir="${report.dir}">
+      <fileset dir="${report.dir}" includes="TEST-*.xml"/>
+      <report todir="${report.dir}"/>
+    </junitreport>
+  </target>
+  <!-- -->
+<!-- -->
+
+<!-- Apache Ivy -->
+  <property name="ivy.install.version" value="2.3.0"/>
+  <condition property="ivy.home" value="${env.IVY_HOME}">
+    <isset property="env.IVY_HOME"/>
+  </condition>
+  <property name="ivy.home" value="${user.home}/.ant"/>
+  <property name="ivy.jar.dir" value="${ivy.home}/lib"/>
+  <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
+
+  <!-- Download Apache Ivy -->
+  <target name="download-ivy" unless="offline">
+    <mkdir dir="${ivy.jar.dir}"/>
+    <!-- download Ivy from web site so that it can be used even without any special installation -->
+    <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.jar.file}" usetimestamp="true"/>
+  </target>
+  <!-- -->
+
+  <!-- Initialize Apache Ivy -->
+  <target name="init-ivy" depends="download-ivy">
+    <!-- try to load ivy here from ivy home, in case the user has not already dropped
+      it into ant's lib dir (note that the latter copy will always take precedence).
+      We will not fail as long as local lib dir exists (it may be empty) and
+      ivy is in at least one of ant's lib dir or the local lib dir. -->
+    <path id="ivy.lib.path">
+      <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+    </path>
+    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant"
+      classpathref="ivy.lib.path"/>
+  </target>
+  <!-- -->
+
+  <!-- Resolve dependencies -->
+  <target name="resolve" depends="init-ivy">
+    <delete dir="${lib.dir}"/>
+    <mkdir dir="${lib.dir}"/>
+    <ivy:retrieve />
+  </target>
+  <!-- -->
+<!-- -->
+
+</project>

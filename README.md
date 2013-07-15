@@ -1,4 +1,4 @@
 HadoopMaxTemperature
 ====================
 
-Hadoop example Map Reduce application
+Hadoop Map Reduce application example
